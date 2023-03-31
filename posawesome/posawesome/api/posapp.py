@@ -628,12 +628,12 @@ def submit_invoice(invoice, data):
     # Day Close Feature   
     pos_time = frappe.get_doc("Day Close Setting")
     date = datetime.now() - relativedelta(days=1)
-    for row in pos_time.profile_list:
-        if invoice_doc.pos_profile == row.profile:
-            if invoice_doc.posting_time > '00:00:00' and invoice_doc.posting_time < row.end_time:
-                invoice_doc.set_posting_time = 1
-            if pos_time.enable:
-                invoice_doc.posting_date = date    
+    if pos_time.enable:
+        for row in pos_time.profile_list:
+            if invoice_doc.pos_profile == row.profile:
+                if invoice_doc.posting_time > '00:00:00' and invoice_doc.posting_time < str(row.end_time):
+                    invoice_doc.set_posting_time = 1
+                    invoice_doc.posting_date = str(date)    
     invoice_doc.save()
 
     if frappe.get_value(
