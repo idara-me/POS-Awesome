@@ -632,6 +632,7 @@ def submit_invoice(invoice, data):
         if invoice_doc.pos_profile == row.profile:
             if invoice_doc.posting_time > '00:00:00' and invoice_doc.posting_time < row.end_time:
                 invoice_doc.set_posting_time = 1
+            if pos_time.enable:
                 invoice_doc.posting_date = date    
     invoice_doc.save()
 
