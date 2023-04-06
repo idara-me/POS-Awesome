@@ -1,0 +1,31 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "creation": "2023-03-18 22:45:21.898237",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "POS Invoice",
+ "enabled": 0,
+ "event": "Submit",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "Add your message here",
+ "modified": "2023-03-18 22:45:21.898237",
+ "modified_by": "support@powersoftsystem.com",
+ "module": "POSAwesome",
+ "name": "Alert : New Order with 100% discount",
+ "owner": "support@powersoftsystem.com",
+ "recipients": [
+  {
+   "receiver_by_role": "Branch Mgr"
+  }
+ ],
+ "send_system_notification": 1,
+ "send_to_all_assignees": 0,
+ "sender": "ERPNext Alerts",
+ "sender_email": "erpnextalert@gmail.com",
+ "set_property_after_alert": "",
+ "subject": "Alert : New Order with 100% discount",
+ "value_changed": "status"
+}

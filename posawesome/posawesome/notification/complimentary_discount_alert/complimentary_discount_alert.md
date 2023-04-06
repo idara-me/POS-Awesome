@@ -1,0 +1,1 @@
+<p>This is sytem alert to notify you that discount of 100% has been given to customer with name on document with reference no&nbsp;&lt;a href="{{frappe.utils.get_url_to_form(doc.doctype, doc.name)}}"&gt;{{doc.name}}</p>
