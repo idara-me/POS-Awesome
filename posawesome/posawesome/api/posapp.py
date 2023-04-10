@@ -520,6 +520,7 @@ def get_sales_person_names():
 
 @frappe.whitelist()
 def update_invoice(data):
+    frappe.db.sql(""" SET AUTOCOMMIT = ON """)
     data = json.loads(data)
     if data.get("name"):
         invoice_doc = frappe.get_doc("Sales Invoice", data.get("name"))
@@ -584,6 +585,7 @@ def update_invoice(data):
 
 @frappe.whitelist()
 def submit_invoice(invoice, data):
+    frappe.db.sql(""" SET AUTOCOMMIT = ON """)
     data = json.loads(data)
     invoice = json.loads(invoice)
     invoice_doc = frappe.get_doc("Sales Invoice", invoice.get("name"))
