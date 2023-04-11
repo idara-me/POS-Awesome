@@ -71,10 +71,58 @@ def get_opening_dialog_data():
 
     return data
 
+@frappe.whitelist()
+def get_pos_profiles():
+    data = {}
+    data["companys"] = frappe.get_list("Company", limit_page_length=0, order_by="name")
+    cur_user = frappe.session.user
+    
+    profiles_list = frappe.get_all(
+        "POS Profile User",
+        filters={"user": cur_user},
+        fields=["parent"],
+        limit_page_length=0,
+        order_by="name",
+    )
+    data["pos_profiles_data"] =[]
+    newdata=[]
+    for row in profiles_list:
+        item_list={}
+        name , company = frappe.db.get_value('POS Profile', {'name': row.parent}, ['name', 'company']) 
+        item_list={"name":name,"company":company}
+        newdata.append(item_list)
+    
+    data["pos_profiles_data"] = newdata
+
+    return data
+
 
 @frappe.whitelist()
 def create_opening_voucher(pos_profile, company, balance_details):
-    balance_details = json.loads(balance_details)
+        balance_details = json.loads(balance_details)
+
+        new_pos_opening = frappe.get_doc(
+            {
+                "doctype": "POS Opening Shift",
+                "period_start_date": frappe.utils.get_datetime(),
+                "posting_date": frappe.utils.getdate(),
+                "user": frappe.session.user,
+                "pos_profile": pos_profile,
+                "company": company,
+                "docstatus": 1,
+            }
+        )
+        new_pos_opening.set("balance_details", balance_details)
+        new_pos_opening.insert(ignore_permissions=True)
+
+        data = {}
+        data["pos_opening_shift"] = new_pos_opening.as_dict()
+        update_opening_shift_data(data, new_pos_opening.pos_profile)
+        return data
+
+@frappe.whitelist()
+def new_opening_voucher(pos_profile, company, balance_details):
+    # balance_details = json.loads(balance_details)
 
     new_pos_opening = frappe.get_doc(
         {
@@ -87,13 +135,14 @@ def create_opening_voucher(pos_profile, company, balance_details):
             "docstatus": 1,
         }
     )
-    new_pos_opening.set("balance_details", balance_details)
-    new_pos_opening.insert(ignore_permissions=True)
+    # new_pos_opening.set("balance_details", balance_details)
+    # new_pos_opening.insert(ignore_permissions=True)
 
     data = {}
     data["pos_opening_shift"] = new_pos_opening.as_dict()
     update_opening_shift_data(data, new_pos_opening.pos_profile)
     return data
+
 
 
 @frappe.whitelist()

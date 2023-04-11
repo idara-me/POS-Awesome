@@ -155,11 +155,13 @@ export default {
         return;
       }
       const vm = this;
+      console.log(this.payments_methods);
       return frappe
         .call('posawesome.posawesome.api.posapp.create_opening_voucher', {
           pos_profile: this.pos_profile,
           company: this.company,
           balance_details: this.payments_methods,
+
         })
         .then((r) => {
           if (r.message) {

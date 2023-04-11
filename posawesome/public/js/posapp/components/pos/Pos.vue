@@ -152,6 +152,23 @@ export default {
           }
         });
     },
+    switch_pos_profile() {
+      return frappe
+        .call(
+          'posawesome.posawesome.doctype.pos_closing_shift.pos_closing_shift.make_closing_shift_from_opening',
+          {
+            opening_shift: this.pos_opening_shift,
+          }
+        )
+        .then((r) => {
+          if (r.message) {
+            evntBus.$emit('open_PosProfiles', r.message);
+          } else {
+            console.log(r);
+          }
+        });
+    },
+  
     submit_closing_pos(data) {
       frappe
         .call(
@@ -222,6 +239,9 @@ export default {
       });
       evntBus.$on('open_closing_dialog', () => {
         this.get_closing_data();
+      });
+      evntBus.$on('change_pos_profile', () => {
+        this.switch_pos_profile();
       });
       evntBus.$on('submit_closing_pos', (data) => {
         this.submit_closing_pos(data);

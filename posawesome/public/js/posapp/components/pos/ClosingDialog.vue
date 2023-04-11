@@ -65,6 +65,41 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    
+
+
+
+    <v-dialog v-model="PosProfiles"  max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline primary--text">{{
+            __('Switch POS Profile')
+          }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-autocomplete
+                  :items="pos_profiles"
+                  :label="frappe._('POS Profile')"
+                  v-model="pos_profile"
+                ></v-autocomplete>
+              </v-col>
+              
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          
+          <v-spacer></v-spacer>
+          <v-btn color="danger" dark @click="close_dialog">close</v-btn> 
+          <v-btn color="success" dark @click="submit_dialog1">Submit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-row>
 </template>
 
@@ -73,8 +108,16 @@ import { evntBus } from '../../bus';
 export default {
   data: () => ({
     closingDialog: false,
+    PosProfiles:false,
     itemsPerPage: 20,
     dialog_data: {},
+    company: "Nextash",
+    balance_details: 0,
+    pos_profiles_data: [],
+    pos_profiles: [],
+    pos_profile: '',
+    payments_method_data: [],
+    payments_methods: [],
     headers: [
       {
         text: __('Mode of Payment'),
@@ -110,15 +153,94 @@ export default {
     max25chars: (v) => v.length <= 20 || 'Input too long!', // TODO : should validate as number
     pagination: {},
   }),
-  watch: {},
+  watch: {
+    pos_profile(val) {
+      this.payments_methods = [];
+      this.payments_method_data.forEach((element) => {
+        if (element.parent === val) {
+          this.payments_methods.push({
+            mode_of_payment: element.mode_of_payment,
+            amount: 0,
+          });
+        }
+      });
+    },
+  },
   methods: {
-    close_dialog() {
-      this.closingDialog = false;
+    submit_pos_profile() {
+      const vm = this;
+      frappe.call({
+        method: 'posawesome.posawesome.api.posapp.get_opening_dialog_data',
+        args: {},
+        callback: function (r) {
+          if (r.message) {
+            r.message.pos_profiles_data.forEach((element) => {
+              vm.pos_profiles = r.message.pos_profiles_data;
+            });
+          }
+        },
+      });
     },
 
+    get_opening_dialog_data() {
+      const vm = this;
+      frappe.call({
+        method: 'posawesome.posawesome.api.posapp.get_opening_dialog_data',
+        args: {},
+        callback: function (r) {
+          if (r.message) {
+            r.message.pos_profiles_data.forEach((element) => {
+              vm.pos_profiles.push(element.name);
+            });
+            vm.payments_method_data = r.message.payments_method;
+
+          }
+        },
+      });
+    },
+    new_pos_profile() {
+        if(this.dialog_data.pos_profile != this.pos_profile){
+        return frappe
+          .call(
+            'posawesome.posawesome.api.posapp.create_opening_voucher',
+            {
+              pos_profile: this.pos_profile,
+              company : this.dialog_data.company,
+              balance_details: this.payments_methods
+            }
+          )
+          .then((r) => {
+            if (r.message) {
+              evntBus.$emit('open_PosProfiles', r.message);
+            } else {
+              console.log(r);
+            }
+            this.PosProfiles = false;
+          });
+        }
+    },
+
+    close_dialog() {
+      this.closingDialog = false;
+      this.PosProfiles = false;
+    },
     submit_dialog() {
       evntBus.$emit('submit_closing_pos', this.dialog_data);
       this.closingDialog = false;
+    },
+    submit_dialog1() {
+    if(this.dialog_data.pos_profile != this.pos_profile){  
+      evntBus.$emit('submit_closing_pos', this.dialog_data);
+      this.new_pos_profile()
+    }else{
+      evntBus.$emit('show_mesage', {
+              text: `Already Logged In`,
+              color: 'error',
+            });
+      this.PosProfiles = false;
+      
+    }
+
     },
     formtCurrency(value) {
       value = parseFloat(value);
@@ -130,6 +252,16 @@ export default {
       this.closingDialog = true;
       this.dialog_data = data;
     });
-  },
+
+    evntBus.$on('open_PosProfiles', (data) => {
+      this.PosProfiles = true;
+      this.get_opening_dialog_data()
+      this.dialog_data = data;
+      // data.pos_profiles_data.forEach((element) => {
+      //   this.pos_profiles.push(element.name);
+      // });
+
+    });
+  }
 };
 </script>

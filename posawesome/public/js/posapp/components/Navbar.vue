@@ -65,6 +65,16 @@
                   </v-list-item-content>
                 </v-list-item>
                 <v-divider class="my-0"></v-divider>
+                
+                <v-list-item @click="changeProfile">
+                  <v-list-item-icon>
+                    <v-icon>mdi-account</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{ __('Change POS Profile') }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                
                 <v-list-item @click="logOut">
                   <v-list-item-icon>
                     <v-icon>mdi-logout</v-icon>
@@ -81,6 +91,7 @@
                     <v-list-item-title>{{ __('About') }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
+                
               </v-list-item-group>
             </v-list>
           </v-card>
@@ -122,7 +133,7 @@
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-    <v-snackbar v-model="snack" :timeout="5000" :color="snackColor" top right>
+    <v-snackbar v-model="snack" :timeout="2000" :color="snackColor" top right>
       {{ snackText }}
     </v-snackbar>
     <v-dialog v-model="freeze" persistent max-width="290">
@@ -201,6 +212,10 @@ export default {
           location.reload();
         },
       });
+    },
+    changeProfile(){
+      evntBus.$emit('change_pos_profile');
+      evntBus.$emit('new_pos_profile');
     },
     print_last_invoice() {
       if (!this.last_invoice) return;
