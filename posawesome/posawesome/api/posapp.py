@@ -998,25 +998,25 @@ def create_customer(
     customer_group=None,
     territory=None,
 ):
-    if not frappe.db.exists("Customer", {"customer_name": customer_name}):
-        customer = frappe.get_doc(
-            {
-                "doctype": "Customer",
-                "customer_name": customer_name,
-                "posa_referral_company": company,
-                "tax_id": tax_id,
-                "mobile_no": mobile_no,
-                "email_id": email_id,
-                "posa_referral_code": referral_code,
-                "posa_birthday": birthday,
-            }
-        )
-        if customer_group:
-            customer.customer_group = customer_group
-        if territory:
-            customer.territory = territory
-        customer.save(ignore_permissions=True)
-        return customer
+
+    customer = frappe.get_doc(
+        {
+            "doctype": "Customer",
+            "customer_name": customer_name,
+            "posa_referral_company": company,
+            "tax_id": tax_id,
+            "mobile_no": mobile_no,
+            "email_id": email_id,
+            "posa_referral_code": referral_code,
+            "posa_birthday": birthday,
+        }
+    )
+    if customer_group:
+        customer.customer_group = customer_group
+    if territory:
+        customer.territory = territory
+    customer.save(ignore_permissions=True)
+    return customer
 
 
 @frappe.whitelist()
