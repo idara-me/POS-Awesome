@@ -7,7 +7,7 @@ import json
 import frappe
 import time
 from dateutil.relativedelta import relativedelta
-from frappe.utils import nowdate, flt, cstr
+from frappe.utils import nowdate, flt, cstr, get_time
 from frappe import _
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_bank_cash_account
 from erpnext.stock.get_item_details import get_item_details
@@ -676,15 +676,37 @@ def submit_invoice(invoice, data):
     frappe.flags.ignore_account_permission = True
     invoice_doc.posa_is_printed = 1
 
-    # Day Close Feature   
+    # Day Close Feature  
+    # start 
     pos_time = frappe.get_doc("Day Close Setting")
     date = datetime.now() - relativedelta(days=1)
+    now = datetime.now().time()
+    nowtime = frappe.utils.get_time(invoice_doc.posting_time)
     if pos_time.enable:
         for row in pos_time.profile_list:
             if invoice_doc.pos_profile == row.profile:
-                if invoice_doc.posting_time > '00:00:00' and invoice_doc.posting_time < str(row.end_time):
+                start_time = datetime(2000, 1, 1, 0, 0, 0) + row.start_time
+                end_time = datetime(2000, 1, 1, 0, 0, 0) + row.end_time
+                # Compare the current time to the start and end times
+                # frappe.msgprint(f'now={now}, utilstime={nowtime} posting_time={invoice_doc.posting_time}')
+                if nowtime >= start_time.time() and nowtime <= end_time.time():
                     invoice_doc.set_posting_time = 1
-                    invoice_doc.posting_date = str(date)    
+                    invoice_doc.posting_date = str(date)
+                elif nowtime <= end_time.time():
+                    invoice_doc.set_posting_time = 1
+                    invoice_doc.posting_date = str(date)
+    # end
+    si_doc = frappe.get_doc("Sales Invoice", invoice_doc.name)
+    if len(si_doc.packed_items):
+        for row in si_doc.packed_items:
+            if frappe.db.exists("Bin", {"warehouse": row.warehouse,"item_code":row.item_code}):
+                bin = frappe.get_doc("Bin", {"warehouse": row.warehouse,"item_code":row.item_code})
+                if row.qty>bin.actual_qty and bin.actual_qty != 0 :
+                    frappe.throw(f'{row.parent_item} doesn\'t have enough stock of material item {row.item_code} in {row.warehouse} warehouse')
+                elif bin.actual_qty == 0:
+                    frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has zero qty in {row.warehouse} warehouse')
+                elif bin.actual_qty < 0:
+                    frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has negative qty in {row.warehouse} warehouse')
     invoice_doc.save()
 
     if frappe.get_value(
