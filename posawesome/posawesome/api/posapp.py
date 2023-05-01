@@ -710,7 +710,7 @@ def submit_invoice(invoice, data):
                     elif bin.actual_qty < 0:
                         frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has negative qty in {row.warehouse} warehouse')
                 else:
-                    frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has zero qty in {row.warehouse} warehouse')
+                    frappe.throw(f'{row.parent_item} doesn\'t have enough stock of material item {row.item_code} in {row.warehouse} warehouse')
                     
                     
     invoice_doc.save()
