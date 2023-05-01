@@ -696,17 +696,22 @@ def submit_invoice(invoice, data):
                     invoice_doc.set_posting_time = 1
                     invoice_doc.posting_date = str(date)
     # end
-    si_doc = frappe.get_doc("Sales Invoice", invoice_doc.name)
-    if len(si_doc.packed_items):
-        for row in si_doc.packed_items:
-            if frappe.db.exists("Bin", {"warehouse": row.warehouse,"item_code":row.item_code}):
-                bin = frappe.get_doc("Bin", {"warehouse": row.warehouse,"item_code":row.item_code})
-                if row.qty>bin.actual_qty and bin.actual_qty != 0 :
-                    frappe.throw(f'{row.parent_item} doesn\'t have enough stock of material item {row.item_code} in {row.warehouse} warehouse')
-                elif bin.actual_qty == 0:
-                    frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has zero qty in {row.warehouse} warehouse')
-                elif bin.actual_qty < 0:
-                    frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has negative qty in {row.warehouse} warehouse')
+    allow_negative_stock = frappe.db.get_single_value('Stock Settings', 'allow_negative_stock')
+    if not allow_negative_stock:
+        si_doc = frappe.get_doc("Sales Invoice", invoice_doc.name)
+        if len(si_doc.packed_items):
+            for row in si_doc.packed_items:
+                if frappe.db.exists("Bin", {"warehouse": row.warehouse,"item_code":row.item_code}):
+                    bin = frappe.get_doc("Bin", {"warehouse": row.warehouse,"item_code":row.item_code})
+                    if row.qty>bin.actual_qty and bin.actual_qty != 0 :
+                        frappe.throw(f'{row.parent_item} doesn\'t have enough stock of material item {row.item_code} in {row.warehouse} warehouse')
+                    elif bin.actual_qty == 0:
+                        frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has zero qty in {row.warehouse} warehouse')
+                    elif bin.actual_qty < 0:
+                        frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has negative qty in {row.warehouse} warehouse')
+                else:
+                    frappe.throw(f'{row.parent_item} doesn\'t have any stock qty of material item {row.item_code} in any warehouse')
+                    
     invoice_doc.save()
 
     if frappe.get_value(
