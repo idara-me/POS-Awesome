@@ -706,6 +706,8 @@ def submit_invoice(invoice, data):
         
         if len(si_doc.packed_items):
             required_msg = ""
+            parent_item =  ""
+            
             for row in si_doc.packed_items:
                 last_entry = get_previous_sle(
                     {
@@ -717,11 +719,17 @@ def submit_invoice(invoice, data):
                 )
 
                 if row.qty > last_entry.qty_after_transaction:
-                    msg = _("Can't sell {3}: <br><br> {0} units of Material {1} needed in {2} to complete this transaction.").format(
+                    if parent_item != row.parent_item:
+                        required_msg += _("Can't sell {0}: <br><br>").format(
+                            frappe.get_desk_link("Item", row.parent_item)
+                        )
+                        
+                        parent_item = row.parent_item
+                    
+                    msg = _("{0} units of Material {1} needed in {2} to complete this transaction.").format(
                         abs(row.qty),
                         frappe.get_desk_link("Item", row.item_code),
-                        frappe.get_desk_link("Warehouse", row.warehouse),
-                        frappe.get_desk_link("Item", row.parent_item)
+                        frappe.get_desk_link("Warehouse", row.warehouse)
                     )
 
                     required_msg += f'{msg} <hr>'
