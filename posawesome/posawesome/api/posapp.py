@@ -28,6 +28,10 @@ from posawesome.posawesome.doctype.pos_coupon.pos_coupon import check_coupon_cod
 from posawesome.posawesome.doctype.delivery_charges.delivery_charges import (
     get_applicable_delivery_charges as _get_applicable_delivery_charges,
 )
+from erpnext.stock.stock_ledger import get_previous_sle
+from erpnext.stock.report.stock_ledger.stock_ledger import get_warehouse_condition
+
+                
 from datetime import datetime,timedelta
 import time
 @frappe.whitelist()
@@ -699,20 +703,33 @@ def submit_invoice(invoice, data):
     allow_negative_stock = frappe.db.get_single_value('Stock Settings', 'allow_negative_stock')
     if not allow_negative_stock:
         si_doc = frappe.get_doc("Sales Invoice", invoice_doc.name)
+        
         if len(si_doc.packed_items):
+            required_msg = ""
             for row in si_doc.packed_items:
-                if frappe.db.exists("Bin", {"warehouse": row.warehouse,"item_code":row.item_code}):
-                    bin = frappe.get_doc("Bin", {"warehouse": row.warehouse,"item_code":row.item_code})
-                    if row.qty>bin.actual_qty and bin.actual_qty != 0 :
-                        frappe.throw(f'{row.parent_item} doesn\'t have enough stock of material item {row.item_code} in {row.warehouse} warehouse')
-                    elif bin.actual_qty == 0:
-                        frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has zero qty in {row.warehouse} warehouse')
-                    elif bin.actual_qty < 0:
-                        frappe.throw(f'Materal Item {row.item_code}, from bundle {row.parent_item} has negative qty in {row.warehouse} warehouse')
-                else:
-                    frappe.throw(f'{row.parent_item} doesn\'t have enough stock of material item {row.item_code} in {row.warehouse} warehouse')
+                last_entry = get_previous_sle(
+                    {
+                        "item_code": row.item_code,
+                        "warehouse_condition": get_warehouse_condition(row.warehouse),
+                        "posting_date": nowdate(),
+                        "posting_time": datetime.now().time(),
+                    }
+                )
+
+                if row.qty > last_entry.qty_after_transaction:
+                    msg = _("Can't sell {3}: <br><br> {0} units of Material {1} needed in {2} to complete this transaction.").format(
+                        abs(row.qty),
+                        frappe.get_desk_link("Item", row.item_code),
+                        frappe.get_desk_link("Warehouse", row.warehouse),
+                        frappe.get_desk_link("Item", row.parent_item)
+                    )
+
+                    required_msg += f'{msg} <hr>'
                     
                     
+        if len(required_msg):
+            frappe.throw(required_msg)
+
     invoice_doc.save()
 
     if frappe.get_value(
