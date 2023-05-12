@@ -735,8 +735,8 @@ def submit_invoice(invoice, data):
                     required_msg += f'{msg} <hr>'
                     
                     
-        if len(required_msg):
-            frappe.throw(required_msg)
+            if len(required_msg):
+                frappe.throw(required_msg)
 
     invoice_doc.save()
 
