@@ -242,14 +242,20 @@ fixtures = [
                     "POS Profile-customer_type",
                     "POS Profile-customer_group",
                     "POS Profile-customer_territory",
-                    "POS Profile-pos_default_settings"
-                    
+                    "POS Profile-pos_default_settings",
+                    # sales invoice
+                    "Sales Invoice-pos_profile_selector"  
                 ),
             ]
         ],
     },
     {
         "doctype": "Property Setter",
-        "filters": [["name", "in", ("Sales Invoice-posa_pos_opening_shift-no_copy")]],
+        "filters": [
+            ["name", "in", (
+                "Sales Invoice-posa_pos_opening_shift-no_copy",
+                "Sales Invoice-pos_profile-hidden"
+            )]
+        ],
     },
 ]

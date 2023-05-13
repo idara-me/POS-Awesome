@@ -14,5 +14,21 @@
   "property_type": "Check",
   "row_name": null,
   "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Sales Invoice",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "pos_profile",
+  "is_system_generated": 0,
+  "modified": "2023-05-13 10:20:12.623992",
+  "module": null,
+  "name": "Sales Invoice-pos_profile-hidden",
+  "property": "hidden",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "1"
  }
 ]
