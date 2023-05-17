@@ -707,18 +707,20 @@ def submit_invoice(invoice, data):
         if len(si_doc.packed_items):
             required_msg = ""
             parent_item =  ""
-            
+            warehouse=''
             for row in si_doc.packed_items:
-                last_entry = get_previous_sle(
-                    {
-                        "item_code": row.item_code,
-                        "warehouse_condition": get_warehouse_condition(row.warehouse),
-                        "posting_date": nowdate(),
-                        "posting_time": datetime.now().time(),
-                    }
-                )
-
-                if row.qty > last_entry.qty_after_transaction:
+                # last_entry = get_previous_sle(
+                #     {
+                #         "item_code": row.item_code,
+                #         "warehouse_condition": get_warehouse_condition(row.warehouse),
+                #         "posting_date": nowdate(),
+                #         "posting_time": datetime.now().time(),
+                #     }
+                # )
+                warehouse=row.warehouse
+                item_qty=get_stock_availability(row.item_code, row.warehouse)
+                frappe.msgprint(str(item_qty))
+                if row.qty > item_qty:
                     if parent_item != row.parent_item:
                         required_msg += _("Can't sell {0}: <br><br>").format(
                             frappe.get_desk_link("Item", row.parent_item)
@@ -733,10 +735,19 @@ def submit_invoice(invoice, data):
                     )
 
                     required_msg += f'{msg} <hr>'
-                    
-                    
+            sidoc_json = frappe.as_json(si_doc)
+            args = json.dumps(sidoc_json)
             if len(required_msg):
-                frappe.throw(required_msg)
+                # frappe.throw(required_msg)
+                frappe.msgprint(msg=required_msg,
+                    title='Error',
+                    raise_exception=ValueError,
+                    primary_action={
+                        'label': _('Perform Action'),
+                        'server_action':'posawesome.posawesome.api.posapp.create_stock_reconcilation',
+                        'args': args
+                    }
+                )
 
     invoice_doc.save()
 
@@ -775,6 +786,29 @@ def submit_invoice(invoice, data):
 
     return {"name": invoice_doc.name, "status": invoice_doc.docstatus}
 
+@frappe.whitelist()
+def create_stock_reconcilation(args):
+    si = json.loads(args)
+    sidoc=json.loads(si)
+    doc = frappe.get_doc({
+        'doctype': 'Stock Reconciliation',
+        'purpose': 'Opening Stock',
+        'cost_center':sidoc['cost_center'],
+        'expense_account':'1410 - Stock In Hand - CFB'
+    })
+    frappe.msgprint('test')
+    for row in sidoc['packed_items']:
+        item_doc = frappe.get_doc('Item', row['item_code'])
+        doc.append('items',{
+            'item_code':row['item_code'],
+            'warehouse':row['warehouse'],
+            'qty':5,
+            'valuation_rate':item_doc.valuation_rate,
+        })
+    doc.set_missing_values()
+    doc.insert()
+    doc.submit()
+    doc.cancel()
 
 def set_batch_nos_for_bundels(doc, warehouse_field, throw=False):
     """Automatically select `batch_no` for outgoing items in item table"""
