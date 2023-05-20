@@ -700,6 +700,7 @@ def submit_invoice(invoice, data):
                     invoice_doc.set_posting_time = 1
                     invoice_doc.posting_date = str(date)
     # end
+    
     allow_negative_stock = frappe.db.get_single_value('Stock Settings', 'allow_negative_stock')
     if not allow_negative_stock:
         si_doc = frappe.get_doc("Sales Invoice", invoice_doc.name)
@@ -707,27 +708,26 @@ def submit_invoice(invoice, data):
         if len(si_doc.packed_items):
             required_msg = ""
             parent_item =  ""
-            warehouse=''
             for row in si_doc.packed_items:
-                # last_entry = get_previous_sle(
-                #     {
-                #         "item_code": row.item_code,
-                #         "warehouse_condition": get_warehouse_condition(row.warehouse),
-                #         "posting_date": nowdate(),
-                #         "posting_time": datetime.now().time(),
-                #     }
-                # )
-                warehouse=row.warehouse
-                item_qty=get_stock_availability(row.item_code, row.warehouse)
-                frappe.msgprint(str(item_qty))
-                if row.qty > item_qty:
+                if frappe.db.exists("Stock Ledger Entry", {"item_code":row.item_code,"warehouse":row.warehouse}): 
+                    last_entry = get_previous_sle(
+                        {
+                            "item_code": row.item_code,
+                            "warehouse_condition": get_warehouse_condition(row.warehouse),
+                            "posting_date": nowdate(),
+                            "posting_time": datetime.now().time(),
+                        }
+                    )
+                else:
+                    frappe.throw(f'{row.item_code} does not have any stock quantity.')
+                if row.qty > last_entry.qty_after_transaction:
                     if parent_item != row.parent_item:
                         required_msg += _("Can't sell {0}: <br><br>").format(
                             frappe.get_desk_link("Item", row.parent_item)
                         )
-                        
+
                         parent_item = row.parent_item
-                    
+
                     msg = _("{0} units of Material {1} needed in {2} to complete this transaction.").format(
                         abs(row.qty),
                         frappe.get_desk_link("Item", row.item_code),
@@ -735,20 +735,8 @@ def submit_invoice(invoice, data):
                     )
 
                     required_msg += f'{msg} <hr>'
-            sidoc_json = frappe.as_json(si_doc)
-            args = json.dumps(sidoc_json)
             if len(required_msg):
-                # frappe.throw(required_msg)
-                frappe.msgprint(msg=required_msg,
-                    title='Error',
-                    raise_exception=ValueError,
-                    primary_action={
-                        'label': _('Perform Action'),
-                        'server_action':'posawesome.posawesome.api.posapp.create_stock_reconcilation',
-                        'args': args
-                    }
-                )
-
+                frappe.throw(required_msg)
     invoice_doc.save()
 
     if frappe.get_value(
