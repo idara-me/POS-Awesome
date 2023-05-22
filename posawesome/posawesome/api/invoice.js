@@ -11,17 +11,23 @@ frappe.ui.form.on('Sales Invoice', {
     },
     refresh:function(frm,dt,dn){
         if(frappe.user!="Administrator"){
-            frappe.db.get_list("POS Profile User", {
-                fields: ['parent'],
-                filters: {
-                    user: frappe.user.name
-                }
+            frappe.db.get_list("POS Profile", {
+                fields: ['name'],
+                filters: {}
             }).then(records => {
-                console.log(records);
                 if(records){
                     let profiles=[]
-                    for(let row of records){
-                        profiles.push(row['parent'])
+                    for(let profile of records){
+                        frappe.db.get_doc('POS Profile', profile['name'])
+                        .then(profile_doc => {
+                            console.log(profile_doc)
+                            for(let item of profile_doc.applicable_for_users){
+                                if(item.user==frappe.user){
+                                    profiles.push(profile['name'])
+                                    break;
+                                }
+                            }
+                        })   
                     }
                     console.log(profiles);
                     frm.set_df_property("pos_profile_selector", "options", profiles);
