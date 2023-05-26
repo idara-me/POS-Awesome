@@ -851,6 +851,8 @@ export default {
       });
     },
     load_print_page() {
+      const print_format_copy =
+        this.pos_profile.print_format_copy;
       const print_format =
         this.pos_profile.print_format_for_online ||
         this.pos_profile.print_format;
@@ -864,11 +866,34 @@ export default {
         print_format +
         '&no_letterhead=' +
         letter_head;
-      const printWindow = window.open(url, 'Print');
+      
+        const url2 =
+        frappe.urllib.get_base_url() +
+        '/printview?doctype=Sales%20Invoice&name=' +
+        this.invoice_doc.name +
+        '&trigger_print=1' +
+        '&format=' +
+        print_format_copy +
+        '&no_letterhead=' +
+        letter_head;
+
+        const printWindow = window.open(url, 'Print');
       printWindow.addEventListener(
         'load',
         function () {
           printWindow.print();
+          // printWindow.close();
+          // NOTE : uncomoent this to auto closing printing window
+        },
+        true
+      );
+
+      
+      const printWindow2 = window.open(url2, 'Print2');
+      printWindow2.addEventListener(
+        'load',
+        function () {
+          printWindow2.print();
           // printWindow.close();
           // NOTE : uncomoent this to auto closing printing window
         },
