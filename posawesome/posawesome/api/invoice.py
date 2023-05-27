@@ -261,3 +261,34 @@ def update_posting_date(doc,method):
     frappe.db.sql("UPDATE `tabSales Invoice` set posting_date=%(posting_date)s WHERE name=%(invoice_id)s",{"posting_date":po_date,"invoice_id":doc.name})
     frappe.db.commit()
     doc.reload()
+
+
+@frappe.whitelist()
+def pos_profile(doctype, txt, searchfield, start, page_len, filters):
+    pos_profiles = frappe.get_all(
+    "POS Profile User", filters={'user':frappe.session.user}, fields=['parent'])
+    
+    if frappe.session.user == 'Administrator':
+        filterz={}  
+    else:
+        pos_profiles_list=[]
+        for row in pos_profiles:
+            pos_profiles_list.append(row.parent)
+        filterz={'name': ['in',pos_profiles_list]}
+    
+    
+    doc = frappe.db.get_list('POS Profile',
+    filters=filterz,
+    fields=['name','warehouse','customer'],as_list=True)
+    return doc
+
+@frappe.whitelist()
+def mode_of_payments(doctype, txt, searchfield, start, page_len, filters):
+    pos_profile = frappe.get_doc('POS Profile', filters['pos_profile'])
+    mopl=[]
+    for row in pos_profile.payments:
+        mopl.append(row.mode_of_payment)
+    doc = frappe.db.get_list("Mode of Payment",
+    filters={'name': ['in',mopl]},
+    fields=['name'],as_list=True)
+    return doc

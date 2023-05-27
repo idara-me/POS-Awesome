@@ -244,7 +244,6 @@ fixtures = [
                     "POS Profile-customer_territory",
                     "POS Profile-pos_default_settings",
                     # sales invoice
-                    "Sales Invoice-pos_profile_selector",
                     "POS Profile-print_format_copy"
                 ),
             ]
@@ -255,7 +254,6 @@ fixtures = [
         "filters": [
             ["name", "in", (
                 "Sales Invoice-posa_pos_opening_shift-no_copy",
-                "Sales Invoice-pos_profile-hidden"
             )]
         ],
     },
