@@ -64,6 +64,24 @@
                     }}</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
+                <!-- Print Duplicate invoice -->
+                <v-list-item
+                  @click="print_last_duplicate_invoice"
+                  v-if="
+                    pos_profile.allow_print_last_duplicate_invoice
+                  "
+                >
+                  <v-list-item-icon>
+                    <v-icon>mdi-printer</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>{{
+                      __('Print Last Duplicate Invoice')
+                    }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+
+
                 <v-divider class="my-0"></v-divider>
                 
                 <v-list-item @click="changeProfile">
@@ -241,6 +259,39 @@ export default {
         true
       );
     },
+    print_last_duplicate_invoice() {
+      frappe.db.get_list('Sales Invoice', {
+    filters: {'pos_profile' : this.pos_profile.name}, // Replace with desired filters
+    fields: ['*'], // Replace with the desired fields
+    order_by: 'creation desc', // Sort in descending order based on creation date
+    limit: 1 // Limit the result to only one record
+    }).then(my_invoice =>  {
+      console.log(this.pos_profile.name)
+      console.log(my_invoice['0']['name'])
+      if (!my_invoice['0']['name']) return;
+      const print_format =
+        this.pos_profile.print_format_copy
+      const letter_head = this.pos_profile.letter_head || 0;
+      const url =
+        frappe.urllib.get_base_url() +
+        '/printview?doctype=Sales%20Invoice&name=' +
+        my_invoice['0']['name'] +
+        '&trigger_print=1' +
+        '&format=' +
+        print_format +
+        '&no_letterhead=' +
+        letter_head;
+      const printWindow = window.open(url, 'Print');
+      printWindow.addEventListener(
+        'load',
+        function () {
+          printWindow.print();
+        },
+        true
+        );
+      })
+    }
+
   },
   created: function () {
     this.$nextTick(function () {

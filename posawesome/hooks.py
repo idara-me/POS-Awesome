@@ -37,6 +37,7 @@ app_include_js = [
 doctype_js = {
     "POS Profile": "posawesome/api/pos_profile.js",
     "Sales Invoice": "posawesome/api/invoice.js",
+    "Supplier": "posawesome/api/supplier.js",
     "Company": "posawesome/api/company.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -244,7 +245,8 @@ fixtures = [
                     "POS Profile-customer_territory",
                     "POS Profile-pos_default_settings",
                     # sales invoice
-                    "POS Profile-print_format_copy"
+                    "POS Profile-print_format_copy",
+                    "POS Profile-allow_print_last_duplicate_invoice"
                 ),
             ]
         ],
