@@ -39,7 +39,6 @@ doctype_js = {
     "Sales Invoice": "posawesome/api/invoice.js",
     "Company": "posawesome/api/company.js",
     "User":"posawesome/api/user.js",
-    
 }
 doctype_list_js = {
     "User": "public/js/user_list.js"
@@ -109,6 +108,10 @@ doc_events = {
     "User": {
         "validate": "posawesome.events.user.validate",
     },
+    "Sales Invoice": {
+        "validate": "posawesome.events.sales_invoice.validate",
+    },
+
 }
 
 # Scheduled Tasks
