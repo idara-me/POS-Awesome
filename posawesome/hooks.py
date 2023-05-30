@@ -15,7 +15,7 @@ app_license = "GPLv3"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/posawesome/css/posawesome.css"
+app_include_css = "style.bundle.css"
 # app_include_js = "/assets/posawesome/js/posawesome.js"
 app_include_js = [
     "/assets/posawesome/node_modules/vuetify/dist/vuetify.js",
@@ -38,8 +38,12 @@ doctype_js = {
     "POS Profile": "posawesome/api/pos_profile.js",
     "Sales Invoice": "posawesome/api/invoice.js",
     "Company": "posawesome/api/company.js",
+    "User":"posawesome/api/user.js",
+    
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+    "User": "public/js/user_list.js"
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -101,6 +105,9 @@ doc_events = {
     "Customer": {
         "validate": "posawesome.posawesome.api.customer.validate",
         "after_insert": "posawesome.posawesome.api.customer.after_insert",
+    },
+    "User": {
+        "validate": "posawesome.events.user.validate",
     },
 }
 
