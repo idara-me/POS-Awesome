@@ -71,30 +71,30 @@ frappe.ui.form.on('Sales Invoice', {
         })
 
     },
-    customer:function(frm,cdt,cdn){
-        if(frm.doc.customer){
-            frappe.db.get_value('Customer', frm.doc.customer, ['posa_discount'])
-            .then(r => {
-                if(frm.doc.items){
-                    for(let row of frm.doc.items){
-                        frappe.model.set_value(row.doctype,row.name,'discount_percentage',r.message.posa_discount)      
-                    }
-                }
-            })
-        }
-    }
+    // customer:function(frm,cdt,cdn){
+    //     if(frm.doc.customer){
+    //         frappe.db.get_value('Customer', frm.doc.customer, ['posa_discount'])
+    //         .then(r => {
+    //             if(frm.doc.items){
+    //                 for(let row of frm.doc.items){
+    //                     frappe.model.set_value(row.doctype,row.name,'discount_percentage',r.message.posa_discount)      
+    //                 }
+    //             }
+    //         })
+    //     }
+    // }
     
 });
 
-frappe.ui.form.on('Sales Invoice Item', {
-    item_code:function(frm,cdt,cdn){
-        if(frm.doc.customer){
-            frappe.db.get_value('Customer', frm.doc.customer, ['posa_discount'])
-                .then(r => {
-                    setTimeout(function(){ 
-                        frappe.model.set_value(cdt,cdn,'discount_percentage',r.message.posa_discount)
-                    }, 1000);
-                })
-        }
-    }
-});
+// frappe.ui.form.on('Sales Invoice Item', {
+//     item_code:function(frm,cdt,cdn){
+//         if(frm.doc.customer){
+//             frappe.db.get_value('Customer', frm.doc.customer, ['posa_discount'])
+//                 .then(r => {
+//                     setTimeout(function(){ 
+//                         frappe.model.set_value(cdt,cdn,'discount_percentage',r.message.posa_discount)
+//                     }, 1000);
+//                 })
+//         }
+//     }
+// });
