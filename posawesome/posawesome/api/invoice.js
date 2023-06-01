@@ -26,6 +26,7 @@ frappe.ui.form.on('Sales Invoice', {
         })
     },
     refresh: function (frm){
+        if(frm.is_new()){
         frm.doc.payments = []
         frm.refresh_field('payments');
         if(!frm.doc.pos_profile) return
@@ -46,6 +47,7 @@ frappe.ui.form.on('Sales Invoice', {
 
             frm.refresh_field('payments');
         })
+    }
     },
     pos_profile: function (frm) {
         frm.doc.payments = []
