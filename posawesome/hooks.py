@@ -109,7 +109,7 @@ doc_events = {
         "validate": "posawesome.events.user.validate",
     },
     "Sales Invoice": {
-        "validate": "posawesome.events.sales_invoice.validate",
+        "on_submit": "posawesome.events.sales_invoice.validate",
     },
 
 }
