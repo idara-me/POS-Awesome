@@ -25,6 +25,28 @@ frappe.ui.form.on('Sales Invoice', {
             }
         })
     },
+    refresh: function (frm){
+        frm.doc.payments = []
+        frm.refresh_field('payments');
+        if(!frm.doc.pos_profile) return
+
+        
+        let gd_total=0.0
+        frappe.db.get_doc('POS Profile', frm.doc.pos_profile)
+        .then(doc => {
+            for(let row of doc.payments){
+                gd_total = row.default==1 && frm.doc.rounded_total > 0 ? frm.doc.rounded_total : 0.0
+
+                frm.add_child('payments', {
+                    default : row.default,
+                    mode_of_payment: row.mode_of_payment,
+                    amount: gd_total
+                });
+            }
+
+            frm.refresh_field('payments');
+        })
+    },
     pos_profile: function (frm) {
         frm.doc.payments = []
         frm.refresh_field('payments');
