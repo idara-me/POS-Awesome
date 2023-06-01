@@ -66,14 +66,9 @@ frappe.ui.form.on('Sales Invoice', {
 
 frappe.ui.form.on('Sales Invoice Item', {
     item_code:function(frm,cdt,cdn){
-        // var row = locals[cdt][cdn];
         if(frm.doc.customer){
-            // frappe.msgprint("Hello")
             frappe.db.get_value('Customer', frm.doc.customer, ['posa_discount'])
                 .then(r => {
-                    console.log(r.message.posa_discount);
-                    console.log(cdt);
-                    console.log(cdn);
                     setTimeout(function(){ 
                         frappe.model.set_value(cdt,cdn,'discount_percentage',r.message.posa_discount)
                     }, 1000);
