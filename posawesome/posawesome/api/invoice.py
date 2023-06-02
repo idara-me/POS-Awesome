@@ -14,9 +14,11 @@ from posawesome.posawesome.doctype.delivery_charges.delivery_charges import (
     get_applicable_delivery_charges,
 )
 
+from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice
 
-def autoname(doc, method):
-    doc.name = now().replace("-", "").replace(" ", "").replace(".","").replace(":", "")
+class AwesomeSalesInvoice(SalesInvoice):
+    def autoname(self):
+        self.name = now().replace("-", "").replace(" ", "").replace(".","").replace(":", "")
 
 def validate(doc, method):
     set_patient(doc)

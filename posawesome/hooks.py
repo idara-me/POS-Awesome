@@ -94,10 +94,13 @@ doctype_list_js = {
 # ---------------
 # Hook on document methods and events
 
+override_doctype_class = {
+	"Sales Invoice": "posawesome.posawesome.api.invoice.AwesomeSalesInvoice",
+}
+
 doc_events = {
     "Sales Invoice": {
         "validate": "posawesome.posawesome.api.invoice.validate",
-        "autoname": "posawesome.posawesome.api.invoice.autoname",
         "before_submit": "posawesome.posawesome.api.invoice.before_submit",
         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
     },
