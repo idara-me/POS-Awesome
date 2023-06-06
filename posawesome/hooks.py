@@ -108,9 +108,9 @@ doc_events = {
         "validate": "posawesome.posawesome.api.customer.validate",
         "after_insert": "posawesome.posawesome.api.customer.after_insert",
     },
-    # "User": {
-    #     "validate": "posawesome.events.user.validate",
-    # },
+    "User": {
+        "validate": "posawesome.events.user.validate",
+    },
     "Sales Invoice": {
         "on_submit": "posawesome.events.sales_invoice.validate",
     },
