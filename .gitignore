@@ -4,5 +4,4 @@
 *.swp
 tags
 posawesome/docs/current
-node_modules
-posawesome/public/dist
+node_modules/

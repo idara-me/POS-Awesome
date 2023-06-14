@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../../tmp/tmp-11874-ifKKSpIVXL1u/posawesome/posawesome/public/scss/style.bundle.css"],
+  "sourcesContent": [".hide_system_user[data-route^=User] [data-fieldname=user_type] {\n  display: none;\n}"],
+  "mappings": ";AAAA;AACE;AAAA;",
+  "names": []
+}
