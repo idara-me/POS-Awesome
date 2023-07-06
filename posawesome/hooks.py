@@ -98,23 +98,29 @@ override_doctype_class = {
 	"Sales Invoice": "posawesome.posawesome.api.invoice.AwesomeSalesInvoice",
 }
 
+# doc_events = {
+#     "Sales Invoice": {
+#         "validate": "posawesome.posawesome.api.invoice.validate",
+#         "before_submit": "posawesome.posawesome.api.invoice.before_submit",
+#         "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
+#     },
+#     "Customer": {
+#         "validate": "posawesome.posawesome.api.customer.validate",
+#         "after_insert": "posawesome.posawesome.api.customer.after_insert",
+#     },
+#     # "User": {
+#     #     "validate": "posawesome.events.user.validate",
+#     # },
+#     "Sales Invoice": {
+#         "on_submit": "posawesome.events.sales_invoice.validate",
+#     },
+
+# }
+
 doc_events = {
     "Sales Invoice": {
-        "validate": "posawesome.posawesome.api.invoice.validate",
-        "before_submit": "posawesome.posawesome.api.invoice.before_submit",
-        "before_cancel": "posawesome.posawesome.api.invoice.before_cancel",
+        "before_cancel": "posawesome.posawesome.api.invoice.cancel_sale_invoice",
     },
-    "Customer": {
-        "validate": "posawesome.posawesome.api.customer.validate",
-        "after_insert": "posawesome.posawesome.api.customer.after_insert",
-    },
-    # "User": {
-    #     "validate": "posawesome.events.user.validate",
-    # },
-    "Sales Invoice": {
-        "on_submit": "posawesome.events.sales_invoice.validate",
-    },
-
 }
 
 # Scheduled Tasks

@@ -294,3 +294,16 @@ def mode_of_payments(doctype, txt, searchfield, start, page_len, filters):
     filters={'name': ['in',mopl]},
     fields=['name'],as_list=True)
     return doc
+
+
+
+@frappe.whitelist()
+def cancel_sale_invoice( doc, method=None):
+    kds_doc_list = frappe.get_list('KDS', {"reference_name": doc.name} )
+    
+    kds_name = kds_doc_list[0].name if len(kds_doc_list) > 0 else None
+    
+    if kds_name:
+        kds_doc = frappe.get_doc("KDS", kds_name)
+        kds_doc.delete()
+        frappe.db.commit()

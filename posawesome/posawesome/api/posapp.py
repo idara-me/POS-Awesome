@@ -1745,15 +1745,14 @@ def get_order_types():
 
 @frappe.whitelist()
 def get_table_number():
-    pass
-    # return frappe.db.sql(
-    #     """
-    #     select name 
-    #     from `tabTable Number`
-    #     order by name
-    #     LIMIT 0, 200 """,
-    #     as_dict=1,
-    # )
+    return frappe.db.sql(
+        """
+        select name 
+        from `tabTable Number`
+        order by name
+        LIMIT 0, 200 """,
+        as_dict=1,
+    )
  # End
 
 @frappe.whitelist()
