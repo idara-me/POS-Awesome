@@ -8,7 +8,7 @@
       color="primary"
       :label="frappe._('Customer')"
       v-model="customer"
-      :items="customers"
+      :items="virtualCustomers"
       item-text="customer_name"
       item-value="name"
       background-color="white"
@@ -63,33 +63,70 @@ export default {
     customers: [],
     customer: "",
     readonly: false,
+    currentFilter: ""
   }),
+
+  computed: {
+    virtualCustomers() {
+      // One way to do it... cleaner, but inefficient
+      // return a max of 50 at a time
+      // return this.customers.filter(d => {
+      //   const searchText = this.currentFilter.toUpperCase();
+
+      //   return d.customer_name.indexOf(searchText) != -1;
+      // }).slice(0, 50);
+
+      // Another way, but faster
+
+      const MAX_ITEMS = 50; // display 50 items at most
+      const out = new Array();
+
+      const searchText = this.currentFilter.toUpperCase();
+
+      let counter = 0;
+      for (const row of this.customers) {
+        if (
+          row.customer_name.indexOf(searchText) != -1
+        ) {
+          out.push(row);
+          counter ++;
+        }
+
+        if (counter >= MAX_ITEMS) {
+          break;
+        }
+      }
+
+      return out;
+    }
+  },
 
   methods: {
     get_customer_names() {
       const vm = this;
       if (vm.pos_profile.posa_local_storage && localStorage.customer_storage) {
         vm.customers = JSON.parse(localStorage.getItem("customer_storage"));
-      }
-      frappe.call({
-        method: "posawesome.posawesome.api.posapp.get_customer_names",
-        args: {
-          pos_profile: this.pos_profile.pos_profile,
-        },
-        callback: function (r) {
-          if (r.message) {
-            vm.customers = r.message;
-            console.info("loadCustomers");
-            if (vm.pos_profile.posa_local_storage) {
-              localStorage.setItem("customer_storage", "");
-              localStorage.setItem(
-                "customer_storage",
-                JSON.stringify(r.message)
-              );
+      } else {
+        frappe.call({
+          method: "posawesome.posawesome.api.posapp.get_customer_names",
+          args: {
+            pos_profile: this.pos_profile.pos_profile,
+          },
+          callback: function (r) {
+            if (r.message) {
+              vm.customers = r.message;
+              console.info(`Loaded ${new Intl.NumberFormat().format(vm.customers?.length)} Customers...`);
+              if (vm.pos_profile.posa_local_storage) {
+                localStorage.setItem("customer_storage", "");
+                localStorage.setItem(
+                  "customer_storage",
+                  JSON.stringify(r.message)
+                );
+              }
             }
-          }
-        },
-      });
+          },
+        });
+      }
     },
     new_customer() {
       evntBus.$emit("open_new_customer");
@@ -98,26 +135,37 @@ export default {
       evntBus.$emit("open_edit_customer");
     },
     customFilter(item, queryText, itemText) {
-      const textOne = item.customer_name
-        ? item.customer_name.toLowerCase()
-        : "";
-      const textTwo = item.tax_id ? item.tax_id.toLowerCase() : "";
-      const textThree = item.email_id ? item.email_id.toLowerCase() : "";
-      const textFour = item.mobile_no ? item.mobile_no.toLowerCase() : "";
-      const textFifth = item.name.toLowerCase();
-      const searchText = queryText.toLowerCase();
+      // const textOne = item.customer_name
+      //   ? item.customer_name.toUpperCase()
+      //   : "";
+      // const textTwo = item.tax_id ? item.tax_id.toLowerCase() : "";
+      // const textThree = item.email_id ? item.email_id.toLowerCase() : "";
+      // const textFour = item.mobile_no ? item.mobile_no.toLowerCase() : "";
+      // const textFifth = item.name.toLowerCase();
+      this.currentFilter = queryText;
+      return true;
+      
+      // const searchText = queryText
+      //   .trim()
+      //   .toUpperCase()
+      // ;
 
-      return (
-        textOne.indexOf(searchText) > -1 ||
-        textTwo.indexOf(searchText) > -1 ||
-        textThree.indexOf(searchText) > -1 ||
-        textFour.indexOf(searchText) > -1 ||
-        textFifth.indexOf(searchText) > -1
-      );
+      // if (!searchText) {
+      //   return false;
+      // }
+
+      // return (
+      //   item.customer_name.startsWith(searchText) 
+      // );
+      // return (
+      //   textOne.indexOf(searchText) > -1 ||
+      //   textTwo.indexOf(searchText) > -1 ||
+      //   textThree.indexOf(searchText) > -1 ||
+      //   textFour.indexOf(searchText) > -1 ||
+      //   textFifth.indexOf(searchText) > -1
+      // );
     },
   },
-
-  computed: {},
 
   created: function () {
     this.$nextTick(function () {
