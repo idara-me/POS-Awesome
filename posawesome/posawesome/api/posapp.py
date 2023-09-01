@@ -490,16 +490,19 @@ def get_customer_group_condition(pos_profile):
 
 
 @frappe.whitelist()
-def get_customer_names(pos_profile):
+def get_customer_names(pos_profile, query=None):
     pos_profile = json.loads(pos_profile)
     condition = ""
     condition += get_customer_group_condition(pos_profile)
+    if query:
+        condition += f" AND name LIKE '%{query}%'"
+    
     customers = frappe.db.sql(
         """
         SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
         FROM `tabCustomer`
         WHERE {0}
-        ORDER by name
+        ORDER by name LIMIT 2
         """.format(
             condition
         ),

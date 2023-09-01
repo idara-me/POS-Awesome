@@ -8,6 +8,7 @@
       color="primary"
       :label="frappe._('Customer')"
       v-model="customer"
+      search="search"
       :items="customers"
       item-text="customer_name"
       item-value="name"
@@ -62,9 +63,9 @@ export default {
     pos_profile: "",
     customers: [],
     customer: "",
+    search: null,
     readonly: false,
   }),
-
   methods: {
     get_customer_names() {
       const vm = this;
@@ -92,6 +93,8 @@ export default {
       });
     },
     new_customer() {
+      console.log(this.customer);
+      console.log(this.search);
       evntBus.$emit("open_new_customer");
     },
     edit_customer() {
@@ -106,6 +109,28 @@ export default {
       const textFour = item.mobile_no ? item.mobile_no.toLowerCase() : "";
       const textFifth = item.name.toLowerCase();
       const searchText = queryText.toLowerCase();
+      const vm = this;
+      
+      if(queryText.length > 2 && queryText != window.queryText){
+        window.queryText = queryText;
+        frappe.call({
+          method: "posawesome.posawesome.api.posapp.get_customer_names",
+          args: {
+            pos_profile: this.pos_profile.pos_profile,
+            query: queryText
+          },
+          callback: function (r) {
+            if (r.message) {
+              let customers = r.message;
+              console.log(vm.customers);
+              console.log(customers);
+
+              vm.customers = [...vm.customers, ...r.message];
+              vm.loading = false
+            }
+          },
+        })
+      }
 
       return (
         textOne.indexOf(searchText) > -1 ||
@@ -114,7 +139,17 @@ export default {
         textFour.indexOf(searchText) > -1 ||
         textFifth.indexOf(searchText) > -1
       );
+      
     },
+
+    querySelections (v) {
+      console.log("chal gaya");
+        this.loading = true
+        // Simulated ajax query
+        setTimeout(() => {
+          
+        }, 500)
+      },
   },
 
   computed: {},
@@ -140,6 +175,9 @@ export default {
   watch: {
     customer() {
       evntBus.$emit("update_customer", this.customer);
+    },
+    search (val) {
+      val && val !== this.select && this.querySelections(val)
     },
   },
 };
