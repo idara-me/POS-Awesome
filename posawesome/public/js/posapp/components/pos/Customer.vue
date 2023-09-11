@@ -143,7 +143,6 @@ export default {
     },
 
     querySelections (v) {
-      console.log("chal gaya");
         this.loading = true
         // Simulated ajax query
         setTimeout(() => {
@@ -153,7 +152,6 @@ export default {
   },
 
   computed: {},
-
   created: function () {
     this.$nextTick(function () {
       evntBus.$on("register_pos_profile", (pos_profile) => {
@@ -171,7 +169,6 @@ export default {
       });
     });
   },
-
   watch: {
     customer() {
       evntBus.$emit("update_customer", this.customer);
