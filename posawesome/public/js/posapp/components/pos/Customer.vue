@@ -178,6 +178,7 @@ export default {
     },
     search (val) {
       val && val !== this.select && this.querySelections(val)
+      update:search.$emit("querySelections", this.customer);
     },
   },
 };
