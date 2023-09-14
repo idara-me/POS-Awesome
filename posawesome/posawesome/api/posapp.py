@@ -513,7 +513,7 @@ def get_customer_names(pos_profile, query=None):
         ),
         as_dict=1,
     )
-    default_customer= frappe.get_doc("Customer" ,  pos_profile.customer)
+    default_customer= frappe.get_doc("Customer" ,  pos_profile.get('customer'))
     customers.append(default_customer)
     return customers
 
