@@ -506,13 +506,15 @@ def get_customer_names(pos_profile, query=None):
         """
         SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
         FROM `tabCustomer`
-        WHERE {0} Or customer_name == "{1}"
+        WHERE {0}
         ORDER by name LIMIT 1000
         """.format(
-            condition, pos_profile.get("customer"),
+            condition 
         ),
         as_dict=1,
     )
+    default_customer= frappe.get_doc("Customer" ,  pos_profile.customer)
+    customers.append(default_customer)
     return customers
 
 
