@@ -506,10 +506,10 @@ def get_customer_names(pos_profile, query=None):
         """
         SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
         FROM `tabCustomer`
-        WHERE {0}
+        WHERE {0} Or customer_name == "{1}"
         ORDER by name LIMIT 1000
         """.format(
-            condition
+            condition, pos_profile.get("customer"),
         ),
         as_dict=1,
     )
