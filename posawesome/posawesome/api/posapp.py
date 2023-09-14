@@ -502,7 +502,7 @@ def get_customer_names(pos_profile, query=None):
         SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
         FROM `tabCustomer`
         WHERE {0}
-        ORDER by name LIMIT 2
+        ORDER by name LIMIT 500
         """.format(
             condition
         ),
