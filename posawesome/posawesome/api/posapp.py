@@ -495,14 +495,19 @@ def get_customer_names(pos_profile, query=None):
     condition = ""
     condition += get_customer_group_condition(pos_profile)
     if query:
-        condition += f" AND name LIKE '%{query}%'"
+        condition += f""" AND (name LIKE '%{query}%' 
+        OR customer_name LIKE '%{query}%' 
+        OR mobile_no LIKE '%{query}%'
+        OR email_id LIKE '%{query}%'
+        OR tax_id LIKE '%{query}%'
+        ) """
     
     customers = frappe.db.sql(
         """
         SELECT name, mobile_no, email_id, tax_id, customer_name, primary_address
         FROM `tabCustomer`
         WHERE {0}
-        ORDER by name LIMIT 500
+        ORDER by name LIMIT 1000
         """.format(
             condition
         ),
