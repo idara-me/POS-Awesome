@@ -788,14 +788,14 @@ export default {
         frappe.utils.play_sound('error');
         return;
       }
-      return;
-      
+
       this.submit_invoice();
       this.customer_credit_dict = [];
       this.redeem_customer_credit = false;
       this.is_cashback = true;
       this.sales_person = '';
 
+      return;
       evntBus.$emit('new_invoice', 'false');
       this.back_to_invoice();
     },
