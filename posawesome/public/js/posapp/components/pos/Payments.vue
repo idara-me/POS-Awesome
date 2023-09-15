@@ -795,7 +795,6 @@ export default {
       this.is_cashback = true;
       this.sales_person = '';
 
-      return;
       evntBus.$emit('new_invoice', 'false');
       this.back_to_invoice();
     },

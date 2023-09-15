@@ -1030,7 +1030,7 @@ export default {
       this.selcted_delivery_charges = {};
       // Customized
       // Start
-      this.order_type = this.pos_profile.order_type;
+      this.order_type = this.pos_profile.default_order_type;
       this.table_number = "";
       // End
       evntBus.$emit('set_customer_readonly', false);
