@@ -788,7 +788,8 @@ export default {
         frappe.utils.play_sound('error');
         return;
       }
-
+      return;
+      
       this.submit_invoice();
       this.customer_credit_dict = [];
       this.redeem_customer_credit = false;
