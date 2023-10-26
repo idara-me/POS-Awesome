@@ -18,7 +18,6 @@ def validate(doc, method=None):
   
           doc.db_set('paid_amount',total_paid_amount)
           
-
           if doc.grand_total != total_paid_amount:
               frappe.throw("Sorry you cannot process further because paid amount is not equal to the total amount")
 
