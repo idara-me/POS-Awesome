@@ -714,7 +714,7 @@ def submit_invoice(invoice, data):
     # end
     
     allow_negative_stock = frappe.db.get_single_value('Stock Settings', 'allow_negative_stock')
-    if not allow_negative_stock and False:
+    if not allow_negative_stock:
         si_doc = frappe.get_doc("Sales Invoice", invoice_doc.name)
         
         if len(si_doc.packed_items):
