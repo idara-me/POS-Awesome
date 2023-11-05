@@ -1136,7 +1136,7 @@ export default {
       doc.posa_delivery_charges_rate = this.delivery_charges_rate || 0;
       // Customized
       // Start
-      doc.order_type = this.pos_profile.default_order_type
+      doc.order_type = this.order_type
       doc.table_number = this.pos_profile.table_number
       // End
       return doc;
