@@ -25,14 +25,14 @@
       <v-row align="center" class="items px-2 py-1">
         <v-col
           v-if="pos_profile.posa_allow_sales_order"
-          cols="6"
+          cols="4"
           class="pb-2 pr-0"
         >
           <Customer></Customer>
         </v-col>
         <v-col
           v-if="!pos_profile.posa_allow_sales_order"
-          cols="9"
+          cols="7"
           class="pb-2"
         >
           <Customer></Customer>
@@ -43,6 +43,13 @@
           class="pb-2"
         >
           <TableDropdown></TableDropdown>
+        </v-col>
+        
+        <v-col
+          cols="2"
+          class="pb-2"
+        >
+          <OrderType></OrderType>
         </v-col>
 
         <v-col v-if="pos_profile.posa_allow_sales_order" cols="3" class="pb-2">
@@ -842,6 +849,7 @@ import { evntBus } from "../../bus";
 import format from "../../format";
 import Customer from "./Customer.vue";
 import TableDropdown from "./TableDropdown.vue";
+import OrderType from "./OrderType.vue";
 
 export default {
   mixins: [format],
@@ -854,6 +862,7 @@ export default {
       return_doc: "",
       customer: "",
       table: "",
+      order_type: "",
       customer_info: "",
       discount_amount: 0,
       additional_discount_percentage: 0,
@@ -897,6 +906,7 @@ export default {
   components: {
     Customer,
     TableDropdown,
+    OrderType
   },
 
   computed: {
@@ -1246,6 +1256,7 @@ export default {
       doc.doctype = "Sales Invoice";
       doc.is_pos = 1;
       doc.custom_pos_table = this.table;
+      doc.custom_order_type = this.order_type;
       doc.ignore_pricing_rule = 1;
       doc.company = doc.company || this.pos_profile.company;
       doc.pos_profile = doc.pos_profile || this.pos_profile.name;
@@ -2916,12 +2927,19 @@ export default {
     evntBus.$on("add_item", (item) => {
       this.add_item(item);
     });
+    
     evntBus.$on("update_customer", (customer) => {
       this.customer = customer;
     });
+    
     evntBus.$on("update_table", (table) => {
       this.table = table;
     });
+    
+    evntBus.$on("update_order_type", (order_type) => {
+      this.order_type = order_type;
+    });
+
     evntBus.$on("fetch_customer_details", () => {
       this.fetch_customer_details();
     });
