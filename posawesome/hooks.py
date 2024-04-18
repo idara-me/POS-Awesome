@@ -161,6 +161,7 @@ fixtures = [
                 "name",
                 "in",
                 (
+                    "Sales Invoice-custom_pos_table",
                     "Sales Invoice-posa_pos_opening_shift",
                     "Item Barcode-posa_uom",
                     "POS Profile-posa_pos_awesome_settings",

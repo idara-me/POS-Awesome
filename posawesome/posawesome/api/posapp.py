@@ -439,6 +439,34 @@ def get_customer_names(pos_profile):
     else:
         return _get_customer_names(pos_profile)
 
+@frappe.whitelist()
+def get_table_names(pos_profile):
+    _pos_profile = json.loads(pos_profile)
+    ttl = _pos_profile.get("posa_server_cache_duration")
+    if ttl:
+        ttl = int(ttl) * 60
+
+    @redis_cache(ttl=ttl or 1800)
+    def __get_table_names(pos_profile):
+        return _get_table_names(pos_profile)
+
+    def _get_table_names(pos_profile):
+        pos_profile = json.loads(pos_profile)
+        condition = ""
+        tables = frappe.db.sql(
+            """
+            SELECT *
+            FROM `tabPOS Table`
+            """,
+            as_dict=1,
+        )
+        return tables
+
+    if _pos_profile.get("posa_use_server_cache"):
+        return __get_table_names(pos_profile)
+    else:
+        return _get_table_names(pos_profile)
+
 
 @frappe.whitelist()
 def get_sales_person_names():
@@ -548,6 +576,10 @@ def update_invoice(data):
         invoice_doc.set_posting_time = 1
 
     invoice_doc.save()
+    
+    if invoice_doc.custom_pos_table:
+        frappe.db.set_value("POS Table", invoice_doc.custom_pos_table, "occupied", 1)
+
     return invoice_doc
 
 
@@ -670,6 +702,9 @@ def submit_invoice(invoice, data):
         redeeming_customer_credit(
             invoice_doc, data, is_payment_entry, total_cash, cash_account, payments
         )
+
+    if invoice_doc.custom_pos_table:
+        frappe.db.set_value("POS Table", invoice_doc.custom_pos_table, "occupied", 0)
 
     return {"name": invoice_doc.name, "status": invoice_doc.docstatus}
 

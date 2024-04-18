@@ -25,18 +25,26 @@
       <v-row align="center" class="items px-2 py-1">
         <v-col
           v-if="pos_profile.posa_allow_sales_order"
-          cols="9"
+          cols="6"
           class="pb-2 pr-0"
         >
           <Customer></Customer>
         </v-col>
         <v-col
           v-if="!pos_profile.posa_allow_sales_order"
-          cols="12"
+          cols="9"
           class="pb-2"
         >
           <Customer></Customer>
         </v-col>
+
+        <v-col
+          cols="3"
+          class="pb-2"
+        >
+          <TableDropdown></TableDropdown>
+        </v-col>
+
         <v-col v-if="pos_profile.posa_allow_sales_order" cols="3" class="pb-2">
           <v-select
             dense
@@ -833,6 +841,7 @@
 import { evntBus } from "../../bus";
 import format from "../../format";
 import Customer from "./Customer.vue";
+import TableDropdown from "./TableDropdown.vue";
 
 export default {
   mixins: [format],
@@ -844,6 +853,7 @@ export default {
       invoice_doc: "",
       return_doc: "",
       customer: "",
+      table: "",
       customer_info: "",
       discount_amount: 0,
       additional_discount_percentage: 0,
@@ -886,6 +896,7 @@ export default {
 
   components: {
     Customer,
+    TableDropdown,
   },
 
   computed: {
@@ -1234,6 +1245,7 @@ export default {
       }
       doc.doctype = "Sales Invoice";
       doc.is_pos = 1;
+      doc.custom_pos_table = this.table;
       doc.ignore_pricing_rule = 1;
       doc.company = doc.company || this.pos_profile.company;
       doc.pos_profile = doc.pos_profile || this.pos_profile.name;
@@ -2907,6 +2919,9 @@ export default {
     evntBus.$on("update_customer", (customer) => {
       this.customer = customer;
     });
+    evntBus.$on("update_table", (table) => {
+      this.table = table;
+    });
     evntBus.$on("fetch_customer_details", () => {
       this.fetch_customer_details();
     });
@@ -2915,7 +2930,10 @@ export default {
       this.cancel_invoice();
     });
     evntBus.$on("load_invoice", (data) => {
+      
       this.new_invoice(data);
+      
+      evntBus.$emit('set_table', data.custom_pos_table)
 
       if (this.invoice_doc.is_return) {
         this.discount_amount = -data.discount_amount;
