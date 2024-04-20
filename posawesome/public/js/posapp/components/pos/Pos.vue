@@ -1,14 +1,15 @@
 <template>
   <div fluid class="mt-2">
-    <ClosingDialog></ClosingDialog>
-    <Drafts></Drafts>
-    <SalesOrders></SalesOrders>
-    <Returns></Returns>
-    <NewAddress></NewAddress>
-    <MpesaPayments></MpesaPayments>
-    <Variants></Variants>
-    <OpeningDialog v-if="dialog" :dialog="dialog"></OpeningDialog>
-    <v-row v-show="!dialog">
+    <TableUI v-if="is_table_view"></TableUI>
+    <ClosingDialog v-if="!is_table_view"></ClosingDialog>
+    <Drafts v-if="!is_table_view"></Drafts>
+    <SalesOrders  v-if="!is_table_view"></SalesOrders>
+    <Returns v-if="!is_table_view"></Returns>
+    <NewAddress v-if="!is_table_view"></NewAddress>
+    <MpesaPayments v-if="!is_table_view"></MpesaPayments>
+    <Variants v-if="!is_table_view"></Variants>
+    <OpeningDialog v-if="dialog && !is_table_view" :dialog="dialog"></OpeningDialog>
+    <v-row v-show="!dialog && !is_table_view">
       <v-col
         v-show="!payment && !offers && !coupons"
         xl="5"
@@ -76,10 +77,12 @@ import NewAddress from './NewAddress.vue';
 import Variants from './Variants.vue';
 import Returns from './Returns.vue';
 import MpesaPayments from './Mpesa-Payments.vue';
+import TableUI from '../Table/TableUI.vue';
 
 export default {
   data: function () {
     return {
+      is_table_view: true,
       dialog: false,
       pos_profile: '',
       pos_opening_shift: '',
@@ -96,7 +99,7 @@ export default {
     Payments,
     Drafts,
     ClosingDialog,
-
+    TableUI,
     Returns,
     PosOffers,
     PosCoupons,
@@ -217,6 +220,10 @@ export default {
       });
       evntBus.$on('submit_closing_pos', (data) => {
         this.submit_closing_pos(data);
+      });
+      
+      evntBus.$on('set_is_table_view', (value) => {
+        this.is_table_view = value;
       });
     });
   },

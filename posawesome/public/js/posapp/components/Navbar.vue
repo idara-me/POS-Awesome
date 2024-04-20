@@ -5,22 +5,28 @@
         @click.stop="drawer = !drawer"
         class="grey--text"
       ></v-app-bar-nav-icon>
-      <v-img
-        src="/assets/posawesome/js/posapp/components/pos/pos.png"
-        alt="POS Awesome"
+
+      <!-- <v-img
+        src="/assets/posawesome/js/posapp/components/pos/logo.png"
+        alt="Idara POS"
         max-width="32"
         class="mr-2"
         color="primary"
-      ></v-img>
+      ></v-img> -->
       <v-toolbar-title
         @click="go_desk"
         style="cursor: pointer"
         class="text-uppercase primary--text"
       >
-        <span class="font-weight-light">pos</span>
-        <span>awesome</span>
+        <span class="font-weight-light">Idara</span>
+        <span>POS</span>
       </v-toolbar-title>
-
+      
+      <v-spacer></v-spacer>
+      
+      <v-btn color="primary" @click="show_tables" v-if="!is_table_view">{{ __("Tables") }}</v-btn>
+      <v-btn color="primary" @click="show_tables" v-if="is_table_view">{{ __("Items") }}</v-btn>
+      
       <v-spacer></v-spacer>
       <v-btn style="cursor: unset" text color="primary">
         <span right>{{ pos_profile.name }}</span>
@@ -144,6 +150,7 @@ export default {
   // components: {MyPopup},
   data() {
     return {
+      is_table_view: true,
       drawer: false,
       mini: true,
       item: 0,
@@ -158,7 +165,7 @@ export default {
       snackColor: '',
       snackText: '',
       company: 'POS Awesome',
-      company_img: '/assets/erpnext/images/erpnext-logo.svg',
+      company_img: '/assets/posawesome/js/posapp/components/pos/logo.png',
       pos_profile: '',
       freeze: false,
       freezeTitle: '',
@@ -167,6 +174,10 @@ export default {
     };
   },
   methods: {
+    show_tables() {
+      evntBus.$emit("set_is_table_view", !this.is_table_view);
+    },
+
     changePage(key) {
       this.$emit('changePage', key);
     },
@@ -261,6 +272,10 @@ export default {
         this.freeze = false;
         this.freezTitle = '';
         this.freezeMsg = '';
+      });
+
+      evntBus.$on('set_is_table_view', (value) => {
+        this.is_table_view = value;
       });
     });
   },

@@ -78,7 +78,6 @@ export default {
         callback: function (r) {
           if (r.message) {
             vm.tables = r.message;
-            
             console.info('loadTables');
             
             if (vm.pos_profile.posa_local_storage) {

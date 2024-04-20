@@ -467,6 +467,16 @@ def get_table_names(pos_profile):
     else:
         return _get_table_names(pos_profile)
 
+@frappe.whitelist()
+def get_table_names_ui():
+    tables = frappe.db.sql(
+        """
+        SELECT *
+        FROM `tabPOS Table`
+        """,
+        as_dict=1,
+    )
+    return tables
 
 @frappe.whitelist()
 def get_sales_person_names():
