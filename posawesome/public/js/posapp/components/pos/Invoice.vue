@@ -1150,6 +1150,10 @@ export default {
         this.invoice_doc = "";
         this.discount_amount = 0;
         this.additional_discount_percentage = 0;
+
+
+        evntBus.$emit("set_table", "");
+        
         this.invoiceType = this.pos_profile.posa_default_sales_order
           ? "Order"
           : "Invoice";

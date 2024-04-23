@@ -897,6 +897,8 @@ export default {
               text: `Invoice ${r.message.name} is Submited`,
               color: "success",
             });
+
+            evntBus.$emit("set_table", "");
             frappe.utils.play_sound("submit");
             this.addresses = [];
           }

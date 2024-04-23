@@ -4,7 +4,7 @@
     <div class="orders-layout">
       <div class="orders scroll">
         <span class="order-item" :class="[table.occupied ? 'failed' : 'completed']" v-for="table in tables"
-          :key="table.name" @click="changePage('Dine In', table.name)">
+          :key="table.name" @click="changePage('Dine In', table)">
           <div class="order-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
               style="width: 100%; height: auto;">
@@ -22,7 +22,7 @@
       </div>
 
       <div class="actions">
-        <span class="btn-takeaway" @click="changePage('Take Away', '')">
+        <span class="btn-takeaway" @click="changePage('Take Away', {})">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
               style="width: 100%; height: auto;">
@@ -33,7 +33,7 @@
             <h3 class="btn-text">Take Away</h3>
           </div>
         </span>
-        <span class="btn-drive2ru" @click="changePage('Drive 2ru', '')">
+        <span class="btn-drive2ru" @click="changePage('Drive 2ru', {})">
           <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
               style="width: 100%; height: auto;">
@@ -67,15 +67,37 @@ export default {
   methods: {
     changePage(order_type, table) {
       evntBus.$emit("set_order_type", order_type)
-      evntBus.$emit("set_table", table)
+
+      
+      if (table && !table.occupied) {
+        evntBus.$emit("set_table", table.name)
+      }
+      
+      if (table && table.occupied) {
+        console.log(table);
+        frappe.call({
+          method: 'posawesome.posawesome.api.posapp.get_invoice_by_table_name',
+          args: {
+            table_name: table.name
+          },
+          callback: function (r) {
+            if (r.message) {
+              evntBus.$emit("load_invoice", r.message);
+            }
+          },
+        });
+
+      }
+
       evntBus.$emit('set_is_table_view', false)
     },
+
     get_table_names() {
       const vm = this;
-      
+
       frappe.call({
         method: 'posawesome.posawesome.api.posapp.get_table_names_ui',
-       callback: function (r) {
+        callback: function (r) {
           if (r.message) {
             vm.tables = r.message;
           }
@@ -266,5 +288,6 @@ export default {
     --item-border: var(--danger);
     --item-color: var(--danger);
   }
-}</style>
+}
+</style>
 

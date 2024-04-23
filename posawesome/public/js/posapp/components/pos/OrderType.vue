@@ -43,7 +43,7 @@ export default {
       { name: "Take Away" },
     ],
     order_type: '',
-    readonly: false,
+    readonly: true,
   }),
 
   components: {

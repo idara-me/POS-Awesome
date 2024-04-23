@@ -51,7 +51,7 @@ export default {
     pos_profile: '',
     tables: [],
     table: '',
-    readonly: false,
+    readonly: true,
     table_info: {},
   }),
 

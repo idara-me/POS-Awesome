@@ -479,6 +479,14 @@ def get_table_names_ui():
     return tables
 
 @frappe.whitelist()
+def get_invoice_by_table_name(table_name):
+    invoice = frappe.get_list("Sales Invoice", { "custom_pos_table": table_name, "docstatus": 0})
+    if invoice:
+        invoice = frappe.get_doc("Sales Invoice", invoice[0].name)
+
+    return invoice or {}
+
+@frappe.whitelist()
 def get_sales_person_names():
     sales_persons = frappe.get_list(
         "Sales Person",
