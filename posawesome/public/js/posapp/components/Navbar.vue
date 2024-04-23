@@ -6,20 +6,21 @@
         class="grey--text"
       ></v-app-bar-nav-icon>
 
-      <!-- <v-img
-        src="/assets/posawesome/js/posapp/components/pos/logo.png"
-        alt="Idara POS"
+      <v-img
+        src="/assets/posawesome/js/posapp/components/pos/idara_restaurant.png"
+        alt="Idara Restaurant"
         max-width="32"
         class="mr-2"
         color="primary"
-      ></v-img> -->
+      ></v-img>
+      
       <v-toolbar-title
         @click="go_desk"
         style="cursor: pointer"
         class="text-uppercase primary--text"
       >
-        <span class="font-weight-light">Idara</span>
-        <span>POS</span>
+        <span class="font-weight-light" style="text-transform: none;">Idara</span>
+        <span style="text-transform: capitalize;"><strong>Restaurant</strong></span>
       </v-toolbar-title>
       
       <v-spacer></v-spacer>
@@ -165,7 +166,7 @@ export default {
       snackColor: '',
       snackText: '',
       company: 'POS Awesome',
-      company_img: '/assets/posawesome/js/posapp/components/pos/logo.png',
+      company_img: '/assets/posawesome/js/posapp/components/pos/idara_restaurant-circle.png',
       pos_profile: '',
       freeze: false,
       freezeTitle: '',
