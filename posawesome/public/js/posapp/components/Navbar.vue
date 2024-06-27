@@ -6,9 +6,9 @@
         class="grey--text"
       ></v-app-bar-nav-icon>
       <v-img
-        src="/assets/posawesome/js/posapp/components/pos/pos.png"
+        src="/assets/posawesome/images/idara-logo.jpeg"
         alt="POS Awesome"
-        max-width="32"
+        max-width="80"
         class="mr-2"
         color="primary"
       ></v-img>
@@ -18,7 +18,6 @@
         class="text-uppercase primary--text"
       >
         <span class="font-weight-light">pos</span>
-        <span>awesome</span>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -157,8 +156,8 @@ export default {
       snack: false,
       snackColor: '',
       snackText: '',
-      company: 'POS Awesome',
-      company_img: '/assets/erpnext/images/erpnext-logo.svg',
+      company: 'Idara POS',
+      company_img: '/assets/posawesome/images/idara-icon.jpeg',
       pos_profile: '',
       freeze: false,
       freezeTitle: '',
