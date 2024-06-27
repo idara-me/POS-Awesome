@@ -9,7 +9,7 @@ app_description = "POS Awesome"
 app_icon = "octicon octicon-file-directory"
 app_color = "grey"
 app_email = "youssef@totrox.com"
-app_license = "GPLv3"
+app_license = "MIT"
 
 # Includes in <head>
 # ------------------
