@@ -11,6 +11,7 @@ app_color = "grey"
 app_email = "youssef@totrox.com"
 app_license = "GPLv3"
 
+
 # Includes in <head>
 # ------------------
 
